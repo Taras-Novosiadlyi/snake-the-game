@@ -5,6 +5,8 @@
 #include<ctime>
 #include<vector>
 #include<list>
+#include<fstream>
+#include<chrono>
 
 using namespace std;
 
@@ -38,6 +40,7 @@ class snake
     void make_apple(int rows, int cols);// Знаходить оптимальне місце для створення ябука і створює його
     bool is_apple_eaten();// Перевіряє чи є на полі якесь яблуко
     void snakes_tail(int rows, int cols);// Записує координати попереднього перебування "голови" змійки. Ніж більше значення eaten_apples тим більше координат воно записує
+    void write_score(chrono::time_point<chrono::high_resolution_clock> &start_of_game, chrono::time_point<chrono::high_resolution_clock> &end_of_game);// Виводить результат гри у файл
 
 public:
     snake();
@@ -48,6 +51,22 @@ public:
     
 
 };
+
+void snake::write_score(chrono::time_point<chrono::high_resolution_clock> &start_of_game, chrono::time_point<chrono::high_resolution_clock> &end_of_game) 
+{
+    ofstream fout("score");
+    chrono::duration<double> game_sesion = end_of_game - start_of_game;
+
+    if(!fout)
+    {
+        cout << "Помилка збереження результату\n";
+    }
+
+    fout << eaten_apples << " " << game_sesion.count() << endl;
+
+    fout.close();
+
+}
 
 void snake::snakes_tail(int rows, int cols)
 {
@@ -249,6 +268,12 @@ void snake::play_game()
     char movement = 'a';
 
     int rows = 0, cols = 0;
+
+    auto start = chrono::high_resolution_clock::now();
+    chrono::time_point<chrono::high_resolution_clock> stop;
+
+    chrono::duration<double> play_time;
+
     while(movement != '0')
     {
         if (field[rows][cols] != '*' || movement == '\n')
@@ -257,15 +282,21 @@ void snake::play_game()
         }
         else
         {
+            stop = chrono::high_resolution_clock::now();
+
+            write_score(start, stop);
             game_over(rows, cols);
+
             return;
         }
         
-        
-        
         make_apple(rows, cols);
 
-        cout << "Score: " << eaten_apples << endl;
+        stop = chrono::high_resolution_clock::now();
+        play_time = stop - start;
+
+        cout << "Score: " << eaten_apples << endl
+            << "Play time: " << play_time.count() << endl;
 
         show_field();
         movement = getch();
