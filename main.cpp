@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int getch()
+int getch()//Код функції був вязтий з сайту
 {
     struct termios oldattr, newattr;
     int ch;
