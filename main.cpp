@@ -8,7 +8,6 @@
 
 using namespace std;
 
-// Це апсолютно не потрібний коментра який був написаний для тесту
 int getch()//Код функції був вязтий з сайту
 {
     struct termios oldattr, newattr;
