@@ -30,6 +30,7 @@ class snake
     char** field; // зберігає розмір поля гри
     long int eaten_apples;
     unsigned apple_coor_x, apple_coor_y;
+    int is_field_created;
 
     list<vector<int>> coordinates;
 
@@ -41,21 +42,115 @@ class snake
     bool is_apple_eaten();// Перевіряє чи є на полі якесь яблуко
     void snakes_tail(int rows, int cols);// Записує координати попереднього перебування "голови" змійки. Ніж більше значення eaten_apples тим більше координат воно записує
     void write_score(chrono::time_point<chrono::high_resolution_clock> &start_of_game, chrono::time_point<chrono::high_resolution_clock> &end_of_game);// Виводить результат гри у файл
+    void print_score();
+    void create_field();
 
 public:
     snake();
-    ~snake(){delete[] field;}
+    ~snake();
 
     
     void play_game(); // функція яка відповідає за ігровий процес
-    
+    void choose_options();
 
 };
 
+snake::~snake()
+{
+    if(is_field_created)
+    {
+        for(int i = 0; i < height; ++i) 
+        {
+            delete[] field[i];   
+        }
+        
+        delete[] field;
+    }
+    
+}
+
+void snake::create_field()
+{
+    int size; // Відповідає за розмірність поля гри
+
+    // Тут створюється поле вказаного розміру
+    cout << "Введіть розмірність поля: " << endl;
+    cin >> size;
+
+    height = size/2;//Тут size/2 для того щоб поле було семетричним 
+    width = size;
+
+    field = new char*[height];
+    for (int i = 0; i < height; i++)
+    {
+        field[i] = new char[width];
+        for (int j = 0; j < width; j++)
+        {
+            field[i][j] = ' ';
+        }
+        
+    }
+
+    is_field_created = 1;
+
+}
+
+void snake::choose_options()
+{
+    cout << "Виберіть опцію:\n"
+        << "1) Почати гру\n"
+        << "2) Вивести результати попередніх ігор\n";
+
+    char ch;
+
+    cin >> ch;
+
+    bool end_of_loop = false;
+
+    while(!end_of_loop)
+    {
+        switch(ch)
+        {
+            case '1':
+                play_game();
+                end_of_loop = true;
+                break;
+            case '2':
+                print_score();
+                end_of_loop = true;
+                break;
+            
+            default:
+                cout << "Ви не ввели правильної опції\n";
+                break;
+        }
+    }
+}
+
+void snake::print_score()
+{
+    ifstream fin("score");
+
+    float time;
+    int score;
+
+    for(int i = 1;; i++)
+    {
+        fin >> score >> time;
+
+        if(!fin)
+        {
+            break;
+        }
+
+        cout << i << ") " << "Score: " << score << " Time: " << time << endl;
+    }
+}
+
 void snake::write_score(chrono::time_point<chrono::high_resolution_clock> &start_of_game, chrono::time_point<chrono::high_resolution_clock> &end_of_game) 
 {
-    ofstream fout("score");
-    chrono::duration<double> game_sesion = end_of_game - start_of_game;
+    ofstream fout("score", ios::app);
+    chrono::duration<float> game_sesion = end_of_game - start_of_game;
 
     if(!fout)
     {
@@ -63,6 +158,7 @@ void snake::write_score(chrono::time_point<chrono::high_resolution_clock> &start
     }
 
     fout << eaten_apples << " " << game_sesion.count() << endl;
+    //fout << EOF;
 
     fout.close();
 
@@ -96,28 +192,11 @@ void snake::snakes_tail(int rows, int cols)
 
 snake::snake()
 {
-    int size; // Відповідає за розмірність поля гри
-
+    is_field_created = 0;
     eaten_apples = -1; // Тут -1 тому що після початку гри яблук не буде, і алгоритм зразу додасть до цієї змінної 1
     apple_coor_y = 0;
     apple_coor_x = 1;// Тут одиниця щоб яблуко не появилося на місці створення змійки
-    // Тут створюється поле вказаного розміру
-    cout << "Введіть розмірність поля: " << endl;
-    cin >> size;
-
-    height = size/2;//Тут size/2 для того щоб поле було семетричним 
-    width = size;
-
-    field = new char*[height];
-    for (int i = 0; i < height; i++)
-    {
-        field[i] = new char[width];
-        for (int j = 0; j < width; j++)
-        {
-            field[i][j] = ' ';
-        }
-        
-    }
+    
 }
 
 void snake::show_field()
@@ -264,6 +343,8 @@ void snake::make_apple(int rows, int cols)
 
 void snake::play_game()
 {
+    create_field();
+
     srand(time(NULL));
     char movement = 'a';
 
@@ -272,7 +353,7 @@ void snake::play_game()
     auto start = chrono::high_resolution_clock::now();
     chrono::time_point<chrono::high_resolution_clock> stop;
 
-    chrono::duration<double> play_time;
+    chrono::duration<float> play_time;
 
     while(movement != '0')
     {
@@ -320,16 +401,12 @@ void snake::game_over(int rows, int cols)
 
     char ch;
     ch = getch();    
-
-    system("clear");
-    
-        
 }
 
 int main()
 {
     snake snake_game;
-    snake_game.play_game();
+    snake_game.choose_options();
     
 
     return 0;
