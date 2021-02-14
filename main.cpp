@@ -134,7 +134,7 @@ void snake::print_score()
     float time;
     int score;
 
-    for(int i = 1;; i++)
+    for(int i = 1;; i++) // Тут умова знаходиться в виходу з циклу знаходиться в середині, оскільки в протилежному випадку останння стрічка повториться два рази
     {
         fin >> score >> time;
 
@@ -405,6 +405,10 @@ void snake::game_over(int rows, int cols)
 
 int main()
 {
+    #ifdef __WIN32
+    setlocale(LC_ALL, "ukr");
+    #endif
+
     snake snake_game;
     snake_game.choose_options();
     
