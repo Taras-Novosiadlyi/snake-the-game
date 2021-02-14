@@ -242,7 +242,11 @@ void snake::show_field()
 void snake::new_frame(int rows, int cols)
 {
     // Тут всі необхіжні дії для створення нового кадру
+    #ifdef __WIN32
+    system("cls");
+    #else
     system("clear");
+    #endif
 }
 
 void snake::snake_move(int &rows, int &cols, char &movement)
@@ -406,7 +410,7 @@ void snake::game_over(int rows, int cols)
 int main()
 {
     #ifdef __WIN32
-    setlocale(LC_ALL, "ukr");
+    SetConsoleOutputCP(1251);
     #endif
 
     snake snake_game;
