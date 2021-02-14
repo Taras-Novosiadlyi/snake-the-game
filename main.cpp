@@ -126,7 +126,7 @@ void snake::choose_options()
         }
     }
 }
-
+//jfkadsfjkldas;flsd
 void snake::print_score()
 {
     ifstream fin("score");
