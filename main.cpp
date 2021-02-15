@@ -1,14 +1,24 @@
-﻿#include <termios.h>
-#include <unistd.h>
-#include <cstdio>
+﻿#include <cstdio>
 #include <iostream>
 #include<ctime>
 #include<vector>
 #include<list>
 #include<fstream>
 #include<chrono>
+    
+#ifndef _WIN32
+
+#include <termios.h>
+#include <unistd.h>
+#else
+
+#include <conio.h>
+
+#endif
 
 using namespace std;
+
+#ifndef _WIN32
 
 int getch()//Код функції був вязтий з сайту
 {
@@ -22,6 +32,8 @@ int getch()//Код функції був вязтий з сайту
     tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
     return ch;
 }
+
+#endif
 
 class snake 
 {
@@ -380,7 +392,12 @@ void snake::play_game()
             << "Play time: " << play_time.count() << endl;
 
         show_field();
+        
+        #ifdef _WIN32
+        movement = _getch();
+        #else
         movement = getch();
+        #endif
 
         
         new_frame(rows, cols);
