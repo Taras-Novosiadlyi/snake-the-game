@@ -426,6 +426,11 @@ void snake::game_over(int rows, int cols)
 
 int main()
 {
+    #ifdef _WIN32
+    SetConsoleСP(1251);
+    cout << "Please torn on Lucida Console font to fully enable ukrainean language\n";
+    #endif
+
     snake snake_game;
     snake_game.choose_options();
     
