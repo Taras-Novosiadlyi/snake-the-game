@@ -254,7 +254,11 @@ void snake::show_field()
 void snake::new_frame(int rows, int cols)
 {
     // Тут всі необхіжні дії для створення нового кадру
+    #ifdef _WIN32
+    system("cls");
+    #else
     system("clear");
+    #endif
 }
 
 void snake::snake_move(int &rows, int &cols, char &movement)
